@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import CoreLocation
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, CLLocationManagerDelegate {
 
     @IBOutlet weak var currentTemperatureLabel: UILabel!
     @IBOutlet weak var currentHumidityLabel: UILabel!
@@ -17,13 +18,34 @@ class ViewController: UIViewController {
     @IBOutlet weak var currentSummaryLabel: UILabel!
     @IBOutlet weak var refreshButton: UIButton!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var locationLabel: UILabel!
+    
+    var coordinate: Coordinate = {
+        let coordinate = Coordinate(latitude: 0, longitude: 0)
+        return coordinate
+    }()
+    
+    lazy var locationManager: CLLocationManager = {
+        var lm = CLLocationManager()
+        lm.requestWhenInUseAuthorization()
+        lm.delegate = self
+        lm.desiredAccuracy = kCLLocationAccuracyBest
+        return lm
+    }()
+    
     
     let client = DarkSkyAPIClient()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-      refresh()
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.startUpdatingLocation()
+        }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        locationManager.stopUpdatingLocation()
     }
     
     func displayWeather(using  viewModel: CurrentWeatherViewModel) {
@@ -42,15 +64,15 @@ class ViewController: UIViewController {
     @IBAction func refresh() {
         
         toggleRefreshAnimation(on: true)
-        let coordinate = Coordinate(latitude: 37.8267, longitude: -122.42332)
         
-        client.getCurrentWeather(at: coordinate) { [unowned self] (currentWeather, error) in
-            
-            if let currentWeather = currentWeather {
-                let viewModel = CurrentWeatherViewModel(model: currentWeather)
-                self.displayWeather(using: viewModel)
-                self.toggleRefreshAnimation(on: false)
-            }
+            client.getCurrentWeather(at: coordinate) { [unowned self] (currentWeather, error) in
+                
+                print(self.coordinate)
+                if let currentWeather = currentWeather {
+                    let viewModel = CurrentWeatherViewModel(model: currentWeather)
+                    self.displayWeather(using: viewModel)
+                    self.toggleRefreshAnimation(on: false)
+                }
         }
     }
     
@@ -58,6 +80,29 @@ class ViewController: UIViewController {
         
         refreshButton.isHidden = on
         on == true ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        
+        let userLocation: CLLocation = locations[0] as CLLocation
+        locationManager.stopUpdatingLocation()
+        locationManager.stopMonitoringSignificantLocationChanges()
+        
+        coordinate = Coordinate(latitude: userLocation.coordinate.latitude, longitude: userLocation.coordinate.longitude)
+        client.getCurrentWeather(at: coordinate) { [unowned self] (currentWeather, error) in
+            if let currentWeather = currentWeather {
+                let viewModel = CurrentWeatherViewModel(model: currentWeather)
+                self.displayWeather(using: viewModel)
+                self.toggleRefreshAnimation(on: false)
+            }
+        }
+        
+        print("user latitude = \(userLocation.coordinate.latitude)")
+        print("user longitude = \(userLocation.coordinate.longitude)")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Error \(error)")
     }
 }
 

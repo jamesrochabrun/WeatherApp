@@ -34,5 +34,16 @@ struct CurrentWeatherViewModel {
         let weatherIcon = WeatherIcon(iconString: model.iconName)
         self.icon = weatherIcon.image
     }
-    
 }
+
+struct NameLocationViewModel {
+    
+    let location: String
+    
+    init(model: NameLocation) {
+        //here we can format the string however we want
+        self.location = model.location
+    }
+}
+
+

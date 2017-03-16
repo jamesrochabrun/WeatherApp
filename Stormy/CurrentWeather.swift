@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 //2 MODEL FOR THE CURRENT WEATHER RESPONSE
 struct CurrentWeather {
     let temperature: Double
@@ -18,6 +17,9 @@ struct CurrentWeather {
     let iconName: String
 }
 
+struct NameLocation {
+    let location: String
+}
 
 //initializers written in an extension of a struct do not override the member wise initializers so we can just have an altarnetively initializer that takes a josn object
 extension CurrentWeather {

@@ -124,6 +124,7 @@
                         <outlet property="currentSummaryLabel" destination="nw9-ct-mBf" id="TrR-Zu-IQi"/>
                         <outlet property="currentTemperatureLabel" destination="wz5-Cc-ahc" id="TKq-9f-co8"/>
                         <outlet property="currentWeatherIcon" destination="5JS-7j-Aq2" id="6tP-LC-pPt"/>
+                        <outlet property="locationLabel" destination="Zfb-0N-40k" id="7jl-Sf-myc"/>
                         <outlet property="refreshButton" destination="D1p-yQ-YI3" id="ZAN-YK-y6q"/>
                     </connections>
                 </viewController>

@@ -41,6 +41,7 @@ class DarkSkyAPIClient {
                     completion(nil, .jsonParsingFailure)
                     return
                 }
+                
                 completion(currentWeather, nil)
             }
        }

@@ -10,7 +10,7 @@ import Foundation
 
 //COORDINATE HELPER
 struct Coordinate {
-    var latitude: Double
+    var latitude: Double 
     let longitude: Double
 }
 
